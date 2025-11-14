@@ -168,7 +168,7 @@ export class TotGameCore extends EventEmitter {
     this.logger.log(`TOT game started in room ${roomId} with ${participants.length} participants (host excluded)`);
 
     // First player selection uses 3s delay (no spinning animation)
-    this.scheduleAutoDraw(roomId, AUTO_SELECT_DELAY_MS, false);
+    this.scheduleAutoDraw(roomId, AUTO_SELECT_DELAY_MS, true);
 
     return {
       firstPlayer: null,
@@ -329,7 +329,7 @@ export class TotGameCore extends EventEmitter {
         result,
         source: 'auto',
       } as TotPlayerSelectedEvent);
-    }, delayMs);
+    }, delayMs + 3);
 
     this.timers.set(roomId, timer);
   }

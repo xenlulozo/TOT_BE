@@ -11,6 +11,9 @@ interface PlayerState {
   id: string;
   data: Record<string, unknown>;
   status: PlayerStatus;
+  avatar: string;
+  isHost?: boolean;
+
 }
 
 interface RoomState {
@@ -24,6 +27,7 @@ export interface PlayerSummary {
   data: Record<string, unknown>;
   isHost: boolean;
   status: PlayerStatus;
+  avatar: string;
 }
 
 export interface RoomSnapshot {
@@ -44,7 +48,8 @@ export class SocketService {
 
   registerPlayer(roomId: string, client: Socket, data: Record<string, unknown> = {}): boolean {
     const room = this.rooms.get(roomId) ?? this.createRoom(roomId);
-    room.players.set(client.id, { id: client.id, data, status: PlayerStatus.Pending });
+    const avatarValue = typeof data['avatar'] === 'string' ? (data['avatar'] as string) : '';
+    room.players.set(client.id, { id: client.id, data, status: PlayerStatus.Pending, avatar: avatarValue });
 
     const membership = this.playerRooms.get(client.id) ?? new Set<string>();
     membership.add(roomId);
@@ -95,6 +100,40 @@ export class SocketService {
     room.meta = { ...room.meta, ...meta };
   }
 
+  updatePlayerData(roomId: string, playerId: string, data: Record<string, unknown>) {
+    const room = this.rooms.get(roomId);
+    if (!room) {
+      return false;
+    }
+
+    const player = room.players.get(playerId);
+    if (!player) {
+      return false;
+    }
+
+    player.data = { ...player.data, ...data };
+    if (typeof data['avatar'] === 'string') {
+      player.avatar = data['avatar'] as string;
+    }
+    return true;
+  }
+
+  updatePlayerAvatar(roomId: string, playerId: string, avatar: string) {
+    const room = this.rooms.get(roomId);
+    if (!room) {
+      return false;
+    }
+
+    const player = room.players.get(playerId);
+    if (!player) {
+      return false;
+    }
+
+    player.avatar = avatar;
+    player.data = { ...player.data, avatar };
+    return true;
+  }
+
   getRoomSnapshot(roomId: string): RoomSnapshot | null {
     const room = this.rooms.get(roomId);
     if (!room) {
@@ -102,10 +141,11 @@ export class SocketService {
     }
 
     return {
-      players: Array.from(room.players.values(), ({ id, data, status }) => ({
+      players: Array.from(room.players.values(), ({ id, data, status, avatar }) => ({
         id,
         data,
         status,
+        avatar,
         isHost: id === room.hostId,
       })),
       meta: room.meta,
