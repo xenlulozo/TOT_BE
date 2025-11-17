@@ -3,6 +3,7 @@ import { MyRoomState, IPlayerInfo, IPromptOption } from './schema/MyRoomState';
 import { EventKey } from './eventKey';
 import { CorePlayer } from './core/Player.core';
 import { ICreatePlayerDTO, ISetRoomHostDTO, IUpdateProfileDTO } from './player/dto/createPlayer.DTO';
+import { PromptsData } from '../../../src/game/tot/prompts.data';
 
 export class MyRoom extends Room<MyRoomState> {
   maxClients = 40;
@@ -53,21 +54,26 @@ export class MyRoom extends Room<MyRoomState> {
       console.log('🚀 ~ MyRoom ~ onCreate ~ TRUTH_PROMPT_SELECTED:', client.sessionId);
       this.broadcast(EventKey.TRUTH_PROMPT_SELECTED, {
         playerId: client.sessionId,
-        promptId: message?.promptId,
+          content: PromptsData.F_GetPromptById(this.state.currentPlayerWithPrompts?.truthPromptId, 'truth')?.content,
       });
     });
 
     this.onMessage(EventKey.TRICK_PROMPT_SELECTED, (client, message) => {
-      console.log('🚀 ~ MyRoom ~ onCreate ~ TRICK_PROMPT_SELECTED:', client.sessionId);
+      console.log('🚀 ~ MyRoom ~ onCreate ~ TRICK_PROMPT_SELECTED:', client.sessionId ,message);
       this.broadcast(EventKey.TRICK_PROMPT_SELECTED, {
         playerId: client.sessionId,
-        promptId: message?.promptId,
+        content: PromptsData.F_GetPromptById(this.state.currentPlayerWithPrompts?.trickPromptId, 'trick')?.content,
       });
     });
 
     this.onMessage(EventKey.END_TURN, (client, message) => {
       console.log('🚀 ~ MyRoom ~ onCreate ~ END_TURN:', client.sessionId);
       CorePlayer.F_EndTurn(this, client.sessionId);
+    });
+
+    this.onMessage(EventKey.PLAY_AGAIN, (client, message) => {
+      console.log('🚀 ~ MyRoom ~ onCreate ~ PL.PLAY_AGAIN:', client.sessionId);
+      CorePlayer.F_PlayAgain(this);
     });
   }
 
@@ -130,6 +136,21 @@ export class MyRoom extends Room<MyRoomState> {
   public F_EndGame() {
     console.log('🚀 ~ MyRoom ~ F_EndGame ~ F_EndGame:');
     this.broadcast(EventKey.END_GAME, this.state.state);
+  }
+
+  public F_PlayAgain() {
+    console.log('🚀 ~ MyRoom ~ F_EndGame ~ F_PlayAgain:');
+    CorePlayer.F_PlayAgain(this)
+  }
+
+  public F_EndTurn() {
+    console.log('🚀 ~ MyRoom ~ F_EndGame ~ F_EndTurn:');
+    this.broadcast(EventKey.END_TURN, this.state.state);
+  }
+
+  public F_NextTurn() {
+    console.log('🚀 ~ MyRoom ~ F_EndGame ~ F_NextTurn:');
+    this.broadcast(EventKey.NEXT_TURN, this.state.state);
   }
 
   public F_PickPrompt() {

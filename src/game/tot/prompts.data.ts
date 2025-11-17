@@ -1,4 +1,4 @@
-import type { TotPrompt } from './tot-game.core';
+import type { TotPrompt, TotPromptType } from './tot-game.core';
 
 export class PromptsData {
   static truth: TotPrompt[] = [
@@ -47,5 +47,13 @@ export class PromptsData {
 
   public static F_GetTrickPrompts(): TotPrompt[] {
     return this.trick;
+  }
+
+  public static F_GetPromptById(id: string, type: TotPromptType): TotPrompt | null {
+    if (type === 'truth') {
+      return this.truth.find((prompt) => prompt.id === id) || null;
+    } else {
+      return this.trick.find((prompt) => prompt.id === id) || null;
+    }
   }
 }

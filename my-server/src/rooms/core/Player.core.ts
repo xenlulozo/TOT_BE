@@ -179,18 +179,33 @@ export class CorePlayer {
 
     // Kiểm tra xem còn người nào có thể chơi không
     const availablePlayers = Array.from(room.state.players.values()).filter((p) => !p.isHost && p.roundState === RoundState.NOT_STARTED);
+    room.F_EndTurn();
 
     if (availablePlayers.length === 0) {
       // Hết người chơi, kết thúc game
+
       this.logger.log('All players have completed their turns, ending game');
       room.state.F_SetState(RoomState.ENDED);
       room.F_EndGame();
     } else {
       // Còn người chơi, sau 5s bắt đầu lại chu trình xoay bánh xe
       setTimeout(() => {
+        this.F_NextTurn(room);
+      }, 2000);
+    
+      setTimeout(() => {
         this.F_StartNewRound(room);
       }, 5000);
     }
+  }
+
+  public static F_NextTurn(room: MyRoom){
+    room.F_NextTurn()
+  }
+
+  public static F_PlayAgain(room: MyRoom){
+    room.state.F_SetState(RoomState.READY);
+    this.F_StartGame(room)
   }
 
   /**
