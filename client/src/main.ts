@@ -1,4 +1,4 @@
-  import { Assets ,Application ,Sprite} from "pixi.js";
+import { Application, Assets, Sprite } from "pixi.js";
 import { Client } from "colyseus.js";
 
 async function resolveEndpoint(): Promise<string> {

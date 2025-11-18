@@ -12,6 +12,8 @@ export class CreatePlayerDTO {
 export interface ICreatePlayerDTO {
   name?: string;
   avatar?: string;
+  code ?:string;
+  
 }
 
 export interface RemovePlayerDTO {
