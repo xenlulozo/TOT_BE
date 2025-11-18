@@ -192,20 +192,35 @@ export class CorePlayer {
       setTimeout(() => {
         this.F_NextTurn(room);
       }, 2000);
-    
+
       setTimeout(() => {
         this.F_StartNewRound(room);
       }, 5000);
     }
   }
 
-  public static F_NextTurn(room: MyRoom){
-    room.F_NextTurn()
+  public static F_NextTurn(room: MyRoom) {
+    room.F_NextTurn();
   }
 
-  public static F_PlayAgain(room: MyRoom){
+  public static F_PlayAgain(room: MyRoom) {
     room.state.F_SetState(RoomState.READY);
-    this.F_StartGame(room)
+
+    // Reset roundState của tất cả players về NOT_STARTED (trừ host)
+    for (const player of room.state.players.values()) {
+      if (!player.isHost) {
+        player.roundState = RoundState.NOT_STARTED;
+      }
+    }
+
+    // Clear current player with prompts
+    room.state.F_ClearCurrentPlayerWithPrompts();
+
+    // Reset used prompts để có thể sử dụng lại
+    room.state.usedTruthPrompts.clear();
+    room.state.usedTrickPrompts.clear();
+
+    this.F_StartGame(room);
   }
 
   /**
