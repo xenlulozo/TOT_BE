@@ -129,6 +129,8 @@ await this.F_CheckRoom(code);
         CorePlayer.F_StartNewRound(this);
       }, 3000);
     }
+    this.F_UpdateMember();
+
   }
 
   onDispose() {

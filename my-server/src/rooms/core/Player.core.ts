@@ -8,6 +8,7 @@ export class CorePlayer {
   private static readonly logger = new Logger(CorePlayer.name);
   private static readonly _TIME_DELAY_SPIN = 7000;
   private static readonly _TIME_DELAY_PLAYER_SELECTED = 7000;
+  private static readonly _TIME_DELAY_PLAYER_HIDE_SELECTED = 4000;
   private static readonly _TIME_DELAY_PICK_PROMPT = 5000;
   private static readonly _TIME_DELAY_GAME_START = 10000;
 
@@ -93,7 +94,7 @@ export class CorePlayer {
             setTimeout(() => {
               room.F_PickPrompt();
             }, this._TIME_DELAY_PICK_PROMPT);
-          }, 2000);
+          }, this._TIME_DELAY_PLAYER_HIDE_SELECTED);
         }, this._TIME_DELAY_PLAYER_SELECTED);
       } else {
         // Không còn người chơi nào, gửi event END_GAME
@@ -252,7 +253,7 @@ export class CorePlayer {
           setTimeout(() => {
             room.F_PickPrompt();
           }, this._TIME_DELAY_PICK_PROMPT);
-        }, 2000);
+        }, this._TIME_DELAY_PLAYER_HIDE_SELECTED);
       }, this._TIME_DELAY_PLAYER_SELECTED);
     } else {
       // Trường hợp này không nên xảy ra vì đã kiểm tra ở F_EndTurn
